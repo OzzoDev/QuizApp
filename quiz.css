@@ -1,0 +1,138 @@
+@charset "UTF-8";
+@font-face {
+    font-family: "barbaro";
+    src: url(barbaro.woff2) format('woff2');
+  }
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "barbaro", sans-serif;
+}
+.mainWrapper{
+    background-color: #032030;
+    width: 100lvw;
+    height: 100lvh;
+    display: grid;
+    grid-template-areas: 
+    "header"
+    "content"
+    "content"
+    "content"
+    "content"
+    "content"
+    "content"
+    "content"
+    "content"
+    "footer";
+    place-items: center;
+}
+.header, .content, .footer{
+    display: grid;
+    place-items: center;
+    width: 100lvw;
+    height: 100%;
+}
+.header{
+    font-size: 3rem;
+    color: #004D74;
+    background-color: #022B42;
+    grid-area: header;
+}
+.content{
+    background-color: #003554;
+    grid-area: content;
+}
+.formHeader{
+    background-color: azure;
+}
+.formHolder{
+    padding: 20px;
+    background: rgba(0, 100, 148, 0.42);
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 100, 148, 1);
+}
+.formHeader{
+    text-align: center;
+    padding: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #006494;
+    background-color: #022B42;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+form{
+    padding: 0 20px 20px 20px;
+    background-color: #022B42;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.radioButtonHolder{
+    padding: 20px;
+    margin-bottom: 2px;
+    color: #006494;
+    background-color: #032030;
+}
+input[type="radio"]{
+    border: 0 !important;
+    clip: rect(1px 1px 1px 1px);
+    height: 1px !important;
+    overflow: hidden;
+    padding: 0 !important;
+    position: absolute !important;
+    width: 1px !important;
+}
+label{
+    padding: 10px;
+    min-width: 600px;
+    display: inline-flex;
+    align-items: center;
+}
+label::before{
+    content: "";
+    display: block;
+    height: 20px;
+    width: 20px;
+    border: solid 1px #006494;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+input[type="radio"]:checked + label{
+    color: #003554;
+}
+input[type="radio"]:checked + label::before{
+    background: #006DA4;
+    background: radial-gradient(at center, #006DA4, #003554);
+    outline: inset 2px #004D74;
+    outline-offset: 3px;
+}
+.buttonHolder{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    column-gap: 16px;
+    place-items: center;
+}
+.button{
+    width: 100%;
+    padding: 10px;
+    margin-top: 16px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #006494;
+    background-color: #003554;
+    border: outset 2px #006494;
+}
+button[type="button"]:active {
+    border-color: #032030;
+}
+.footer{
+    font-size: 2rem;
+    color: #022B42;
+    grid-area: footer;
+}
