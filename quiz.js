@@ -12,17 +12,23 @@ let radio4 = document.getElementById("radio4_El");
 let radioButtons = [radio1, radio2, radio3, radio4];
 let radioButtonHolder = document.querySelectorAll(".radioButtonHolder");
 let buttonHolder = document.querySelector(".buttonHolder");
+let formWrapper = document.getElementById("formWrapper_El");
 let form = document.getElementById("form_El");
-let endMessage = document.getElementById("endMessage_El");
+let endMessageContainer = document.getElementById("endMessage_El");
+let endMessage = document.getElementById("message_El")
 let formHeader = document.querySelector(".formHeader");
 let nextButton = document.getElementById("nextButton_El");
 let lastButton = document.getElementById("lastButton_El");
 let restartButton = document.getElementById("restartButton_El");
+let qAList = document.getElementById("qAList_El");
+let checkBox = document.getElementById("checkbox_El");
+let statusAreaWrapper = document.getElementById("statusAreaWrapper_El");
+let contentPart = document.getElementById("content_El");
 let qIndex = 0;
-let qCounter = 0;
 let points = 0;
 let quizFinished = false;
 let resetNextButtonText = false;
+let firstQUnanswered = true;
 let qAnswered = [];
 const questions = [
   {
@@ -76,9 +82,8 @@ startQuiz();
 nextButton.addEventListener("click", function () {
   if (!quizFinished) {
     newQuestion();
-  }else{
-    correctAnswer()
-    allQ.textContent ="Question " + (qIndex + 1) + "/" + questions.length + " Points " + points;
+  } else {
+    allQ.textContent = "Question " + (qIndex + 1) + "/" + questions.length;
     showEndMessage();
   }
   if (!checkedIfSelected()) {
@@ -86,12 +91,15 @@ nextButton.addEventListener("click", function () {
     resetNextButtonText = true;
   }
 });
+
 lastButton.addEventListener("click", function () {
   lastQuestion();
 });
-restartButton.addEventListener("click",function(){
+
+restartButton.addEventListener("click", function () {
   restartQuiz();
 });
+
 for (let i = 0; i < radioButtons.length; i++) {
   radioButtons[i].addEventListener("change", function (event) {
     if (event.target.checked && resetNextButtonText) {
@@ -100,86 +108,157 @@ for (let i = 0; i < radioButtons.length; i++) {
       } else {
         nextButton.textContent = "Next";
       }
-      if(qAnswered[qIndex]){
-        qAnswered[qIndex]=i;
+      if (qAnswered[qIndex]) {
+        qAnswered[qIndex] = i;
       }
     }
+    if (qIndex === 0) {
+      nextButton.textContent = "Next";
+    }
+    if (qIndex >= questions.length - 1) {
+      nextButton.textContent = "Finish";
+      quizFinished = true;
+    }
+    if (qAnswered[qIndex] == null) {
+      qAnswered.push(i);
+    } else {
+      qAnswered[qIndex] = i;
+    }
+    addQAtoList();
   });
 }
+checkBox.addEventListener("change", function (event) {
+  if (event.target.checked) {
+    removeStatusArea(false);
+  } else {
+    removeStatusArea(true);
+  }
+});
+
 function startQuiz() {
   qIndex = 0;
-  qCounter = 0; 
-  points = 0; 
+  points = 0;
   qAnswered = []
   shuffleArray(questions);
-  questions.forEach((question, index) => {
+  questions.forEach((question) => {
     question.options = shuffleArray(question.options);
   });
   setQuestion();
   allQ.textContent = "Question " + (qIndex + 1) + "/" + questions.length;
 }
+
+function addQAtoList() {
+  let question = "";
+  let answer = "";
+  firstQUnanswered = false;
+  for (let i = 0; i < qAnswered.length; i++) {
+    question += `
+    <li class="listItem question"><span>Question ${i + 1}: </span>${questions[i].question}</li>
+    <li class="listItem answer"><span>Answer: </span>${questions[i].options[qAnswered[i]].text}</li>`;
+  }
+  if(!firstQUnanswered){
+    removeStatusArea(false);
+  }
+  qAList.innerHTML = question + answer;
+}
+
+function removeStatusArea(remove){
+  if(remove){
+    if(window.innerWidth/window.innerHeight>=1){
+    contentPart.style.gridTemplateColumns = "auto";
+    contentPart.style.gridTemplateRows = "1fr";
+    formWrapper.style.gridRow = "1";
+    statusAreaWrapper.style.gridRow ="1";
+    }else{
+      contentPart.style.gridTemplateRows = "auto";  
+      formWrapper.style.gridRow = "1";
+      statusAreaWrapper.style.gridRow ="2";
+    }
+    statusAreaWrapper.style.display = "none";
+  }else if(!remove&&checkBox.checked){
+    if(window.innerWidth/window.innerHeight>=1){
+    contentPart.style.gridTemplateColumns = "1fr 1fr";
+    contentPart.style.gridTemplateRows = "1fr";
+    formWrapper.style.gridRow = "1";
+    statusAreaWrapper.style.gridRow ="1";
+    }else{
+      contentPart.style.gridTemplateRows = "1fr 1fr"; 
+      contentPart.style.rowGap = "40px";
+      formWrapper.style.gridRow = "1";
+      statusAreaWrapper.style.gridRow ="2";
+    }
+    statusAreaWrapper.style.display = "block";
+  }
+}
+
 function newQuestion() {
   if (checkedIfSelected()) {
-    correctAnswer();
     if (qIndex < questions.length - 1) {
       qIndex++;
     }
     setQuestion();
     resetAllRadioButtons();
-    qCounter++;
-    if (qCounter >= questions.length - 1) {
-      nextButton.textContent = "Finish";
-      quizFinished = true;
-    }
+
   } else {
     nextButton.textContent = "Select an answer";
     resetNextButtonText = true;
   }
+  if (qAnswered[qIndex] != null) {
+    radioButtons[qAnswered[qIndex]].checked = true;
+  }
+  if (qIndex >= questions.length - 1) {
+    nextButton.textContent = "Finish";
+    quizFinished = true;
+  }
 }
+
 function lastQuestion() {
   if (qIndex > 0) {
     qIndex--;
   }
   setQuestion();
-  if(qAnswered[qIndex]){
-    radioButtons[qAnswered[qIndex]].checked=true;
+  if (qAnswered[qIndex] != null) {
+    radioButtons[qAnswered[qIndex]].checked = true;
   }
-}
-function restartQuiz(){
   quizFinished = false;
-  allQ.style.fontSize="1.2em";
-  form.style.display="block";
-  endMessage.style.display="none";
-  resetAllRadioButtons()
-  startQuiz();
+  nextButton.textContent = "Next";
 }
+
+function restartQuiz() {
+  removeStatusArea(false);
+  quizFinished = false;
+  form.style.display = "block";
+  endMessageContainer.style.display = "none";
+  resetAllRadioButtons();
+  startQuiz();
+  firstQUnanswered = true;
+}
+
 function setQuestion() {
   currentQ.textContent = questions[qIndex].question;
   for (let i = 0; i < options.length; i++) {
     options[i].textContent = questions[qIndex].options[i].text;
   }
-  allQ.textContent ="Question " + (qIndex + 1) + "/" + questions.length + " Points " + points;
+  allQ.textContent = "Question " + (qIndex + 1) + "/" + questions.length;
 }
 function resetAllRadioButtons() {
   for (let i = 0; i < radioButtons.length; i++) {
     radioButtons[i].checked = false;
   }
 }
-function correctAnswer() {
-  let checkedRadio = -1;
-  for (let i = 0; i < radioButtons.length; i++) {
-    if (radioButtons[i].checked) {
-      checkedRadio = i;
-      break;
+
+function correctQuiz() {
+  for (let i = 0; i < questions.length; i++) {
+    if (questions[i] && qAnswered[i] !== undefined) {
+      if (questions[i].options && questions[i].options[qAnswered[i]]) {
+        if (questions[i].options[qAnswered[i]].isCorrect) {
+          points++;
+        }
+      }
     }
   }
-  if(!qAnswered[qIndex]){
-    qAnswered.push(checkedRadio);
-  }
-  if (checkedRadio!=-1&&qIndex<=questions.length-1&&questions[qIndex].options[checkedRadio].isCorrect) {
-    points++;
-  }
 }
+
 function checkedIfSelected() {
   for (let i = 0; i < radioButtons.length; i++) {
     if (radioButtons[i].checked) {
@@ -187,13 +266,16 @@ function checkedIfSelected() {
     }
   }
 }
-function showEndMessage(){
-  form.style.display="none";
-  endMessage.style.display="block";
-  currentQ.textContent="";
-  allQ.style.fontSize="4rem";
-  allQ.textContent="Well played you got "+points+"/"+questions.length+"points";
+
+function showEndMessage() {
+  removeStatusArea(true);
+  correctQuiz();
+  form.style.display = "none";
+  endMessageContainer.style.display = "block";
+  currentQ.textContent = "";
+  endMessage.textContent = "Well played you got " + points + "/" + questions.length + "points";
 }
+
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

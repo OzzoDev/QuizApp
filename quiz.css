@@ -8,9 +8,16 @@
     margin: 0;
     box-sizing: border-box;
     font-family: "barbaro", sans-serif;
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none; 
+}
+::-webkit-scrollbar {
+    width: 0;
 }
 .mainWrapper{
-    background-color: #032030;
     width: 100lvw;
     height: 100lvh;
     display: grid;
@@ -34,25 +41,69 @@
     height: 100%;
 }
 .header{
-    min-height: 6lvh;
     font-size: 3rem;
     color: #004D74;
     background-color: #022B42;
     grid-area: header;
 }
 .content{
-    min-height: 88lvh;
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows:auto;
     background-color: #003554;
     grid-area: content;
+    position: relative;
 }
-.formHeader{
-    background-color: azure;
+.statusAreaWrapper{
+    display: none;
+    padding: 20px;
+    background: rgba(0, 100, 148, 0.42);
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 100, 148, 1);
+    overflow-x: hidden;
 }
-.formHolder{
+.statusAreaContainer{
+    position: relative;
     width: 640px;
-    width: 640px;
-    height: 515px;
-    height: 515px;
+    height: 480px;
+    padding: 14px;
+    text-align: center;
+    font-weight: bold;
+    color: #006494;
+    background-color: #022B42;
+    border-radius: 10px;
+}
+.qAList{
+    max-height: 450px;
+    background-color: #032030;
+    border-radius: 10px;
+    padding: 0px 10px 10px 10px;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+}
+.listItem{
+    position: relative;
+    margin-left: 10px;
+    text-align: left;
+    list-style: none;
+    font-size: 2em;
+    color: #006DA4;
+}
+.listItem span{
+    color:#004D74;
+}
+.question{
+    scroll-snap-align: start;
+    margin-top: 10px;
+}
+.answer{
+    margin-left: 30px;
+    margin-bottom: 15px;
+}
+.formWrapper{
     padding: 20px;
     background: rgba(0, 100, 148, 0.42);
     border-radius: 10px;
@@ -61,31 +112,44 @@
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(0, 100, 148, 1);
 }
-.formHeader{
+.formContainer{
+    width: 640px;
+    height: 480px;
+    padding-top: 10px;
     text-align: center;
-    padding: 5px;
-    font-size: 1.2em;
     font-weight: bold;
     color: #006494;
     background-color: #022B42;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-radius: 10px;
+}
+.allQ, .currentQ{
+    font-size: 1.4em;
+}
+.currentQ{
+    margin-bottom: 10px;
 }
 form{
-    min-height: 400px;
-    min-width: 500px;
     padding: 0 20px 20px 20px;
-    background-color: #022B42;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
-.radioButtonHolder{
+.radioButtonHolder, .checkBoxHolder{
     padding: 20px;
     margin-bottom: 2px;
     color: #006494;
     background-color: #032030;
 }
-input[type="radio"]{
+.checkBoxHolder{
+    padding: 10px;
+}
+.checkBoxHolder{
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    border-radius: 10px;
+    color:#004D74;
+}
+input[type="radio"], input[type="checkbox"]{
     border: 0 !important;
     clip: rect(1px 1px 1px 1px);
     height: 1px !important;
@@ -96,11 +160,11 @@ input[type="radio"]{
 }
 label{
     padding: 10px;
-    min-width: 600px;
+    min-width: 100%;
     display: inline-flex;
     align-items: center;
 }
-label::before{
+.radioLabel::before, .checkboxLabel::before{
     content: "";
     display: block;
     height: 20px;
@@ -109,10 +173,18 @@ label::before{
     border-radius: 50%;
     margin-right: 20px;
 }
+.checkboxLabel::before{
+    border-radius: 0;
+    margin-right: 10px;
+    margin-top: 2px;
+}
 input[type="radio"]:checked + label{
     color: #003554;
 }
-input[type="radio"]:checked + label::before{
+input[type="checkbox"]:checked + label{
+    color: #006DA4;
+}
+input[type="radio"]:checked + label::before, input[type="checkbox"]:checked + label::before{
     background: #006DA4;
     background: radial-gradient(at center, #006DA4, #003554);
     outline: inset 2px #004D74;
@@ -121,7 +193,7 @@ input[type="radio"]:checked + label::before{
 .buttonHolder{
     width: 100%;
     display: grid;
-    margin-top: 16px;
+    margin-top: 14px;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
     column-gap: 16px;
@@ -143,10 +215,13 @@ button[type="button"]:active {
     position: relative;
     display: none;
     width: 100%;
-    height: 318px;
+    height: 100%;
     background-color: #022B42;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+}
+.message{
+    font-size: 4rem;
 }
 .restartButton{
     width: 80%;
@@ -156,8 +231,8 @@ button[type="button"]:active {
     transform: translateX(-50%);
 }
 .footer{
-    min-height: 6lvh;
+    background-color: #032030;
     font-size: 2rem;
-    color: #022B42;
+    color:#006494;
     grid-area: footer;
 }
